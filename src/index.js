@@ -5,35 +5,25 @@ import App from './App';
 import Game from './Game'
 import reportWebVitals from './reportWebVitals';
 
-// import {
-//   createHashRouter,
-//   RouterProvider,
-// } from "react-router-dom";
+import {
+  createHashRouter,
+  RouterProvider,
+} from "react-router-dom";
 
-// const router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <App />
-//   },
-//   {
-//     path: "/game",
-//     element: <Game />
-//   },
-// ]);
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />
+  },
+  {
+    path: "/game",
+    element: <Game />
+  },
+]);
 
-// const root = ReactDOM.createRoot(document.getElementById('root'));
-// root.render(
-//   <RouterProvider router={router} />
-// );
-
-import { createRoot } from "react-dom/client";
-import { BrowserRouter } from 'react-router-dom';
-const root = createRoot(document.getElementById("root"));
-
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
-    {<App />}
-  </BrowserRouter>
+  <RouterProvider router={router} />
 );
 
 // If you want to start measuring performance in your app, pass a function
