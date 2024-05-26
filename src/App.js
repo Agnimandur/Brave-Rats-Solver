@@ -10,11 +10,7 @@ function App() {
     <div className="App">
       <Navbar />
       <div className="content">
-        
-        <Routes>
-            <Route path='/Brave-Rats-Solver' element={<Solver/>} />
-            <Route path='/Brave-Rats-Solver/game' element={<Game/>} />
-          </Routes>
+        <Solver />
       </div>
     </div>
   );

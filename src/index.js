@@ -6,7 +6,7 @@ import Game from './Game'
 import reportWebVitals from './reportWebVitals';
 
 import {
-  createHashRouter,
+  createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
 
