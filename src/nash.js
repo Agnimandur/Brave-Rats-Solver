@@ -44,14 +44,16 @@ function round(card1, card2, general1, general2) {
     else if (card1 === 6 && card2 !== 5) general = 1;
     else if (card2 === 6 && card1 !== 5) general = 2;
 
-    let ans = new State(score1, score2, hold, spy, general);
-    return ans;
+    let bit1 = (1 << card1);
+    let bit2 = (1 << card2);
+
+    return new State({bit1, bit2, score1, score2, hold, spy, general});
 }
 
 /*
 Given a state, return a new state resulting from a specific trick played.
 */
-function playMove(cur, card1, card2) {
+export function playMove(cur, card1, card2) {
     let delta = round(card1,card2,cur.general===1,cur.general===2);
 
     let score1 = cur.score1 + delta.score1;
@@ -60,8 +62,7 @@ function playMove(cur, card1, card2) {
     if (delta.score2 > 0) score2 += cur.hold;
     let hold = delta.hold > 0 ? 1 + cur.hold : 0;
     
-    let ans = new State(Math.min(4,score1),Math.min(4,score2),Math.min(4,hold),delta.spy,delta.general);
-    return ans;
+    return new State({bit1: cur.bit1 ^ delta.bit1, bit2: cur.bit2 ^ delta.bit2, score1: Math.min(4,score1), score2: Math.min(4,score2), hold: Math.min(4,hold),spy: delta.spy, general: delta.general});
 }
 
 //Compute the Nash Equilbrium with regret minimization
@@ -69,46 +70,38 @@ function getStrategy(regret) {
     let c = regret.length;
     let strategy = Array.from({length: c}).fill(0.0);
     let s = 0.0;
-    for (var i = 0; i < c; i++) {
+    for (let i = 0; i < c; i++) {
         strategy[i] = Math.max(0.0,regret[i]);
         s += strategy[i];
     }
 
     if (s > 1e-5) {
-        for (var i = 0; i < c; i++) strategy[i] /= s;
+        for (let i = 0; i < c; i++) strategy[i] /= s;
     } else {
-        for (var i = 0; i < c; i++) strategy[i] = 1.0/c;
+        for (let i = 0; i < c; i++) strategy[i] = 1.0/c;
     }
     return strategy;
 }
 
-
-function getHash(bit1, bit2, p1, p2, h, spy, gen) {
-    return String(bit1).padStart(3,"0") + String(bit2).padStart(3,"0") + p1 + p2 + Math.min(4,h) + spy + gen;
-}
-
-function calculateOutcome(bit1, bit2, cur, data) {
+function calculateOutcome(cur, data) {
     let cards1 = [];
     let cards2 = [];
-    let c = 0;
-    for (var i = 0; i < 8; i++) {
-        if ((bit1 & (1 << i)) > 0) {
-            cards1.push(i);
-            c++;
-        }
-        if ((bit2 & (1 << i)) > 0) cards2.push(i);
+    for (let i = 0; i < 8; i++) {
+        if (cur.inHand("yarg",i)) cards1.push(i);
+        if (cur.inHand("applewood",i)) cards2.push(i);
     }
+    let c = cards1.length;
     let outcome = Array.from({length: c});
-    for (var i = 0; i < c; i++) {
+    for (let i = 0; i < c; i++) {
         outcome[i] = Array.from({length: c}).fill(0.0);
     }
-    for (var i = 0; i < c; i++) {
-        for (var j = 0; j < c; j++) {
+    for (let i = 0; i < c; i++) {
+        for (let j = 0; j < c; j++) {
             let res = playMove(cur,cards1[i],cards2[j]);
             if (res.score1 === 4) outcome[i][j] = 1.0; //player 1 wins
             else if (res.score2 === 4) outcome[i][j] = -1.0; //player 2 wins
             else {
-                let hash = getHash(bit1 ^ (1 << cards1[i]),bit2 ^ (1 << cards2[j]),res.score1,res.score2,res.hold,res.spy,res.general);
+                let hash = res.getHash();
                 if (hash in data) {
                     outcome[i][j] = data[hash];
                 } else {
@@ -120,8 +113,8 @@ function calculateOutcome(bit1, bit2, cur, data) {
     return outcome;
 }
 
-function nash(bit1,bit2,cur,iters, data) {
-    let outcome = calculateOutcome(bit1,bit2,cur, data);
+function nash(cur,iters, data) {
+    let outcome = calculateOutcome(cur, data);
     let c = outcome.length;
 
     let sum1 = Array.from({length: c}).fill(0.0);
@@ -129,17 +122,17 @@ function nash(bit1,bit2,cur,iters, data) {
     let regret1 = Array.from({length: c}).fill(0.0);
     let regret2 = Array.from({length: c}).fill(0.0);
 
-    for (var iter = 0; iter < iters; iter++) {
+    for (let iter = 0; iter < iters; iter++) {
         let s1 = getStrategy(regret1);
         let s2 = getStrategy(regret2);
-        for (var i = 0; i < c; i++) {
+        for (let i = 0; i < c; i++) {
             sum1[i] += s1[i];
             sum2[i] += s2[i];
         }
 
-        for (var a1 = 0; a1 < c; a1++) {
-            for (var a2 = 0; a2 < c; a2++) {
-                for (var a = 0; a < c; a++) {
+        for (let a1 = 0; a1 < c; a1++) {
+            for (let a2 = 0; a2 < c; a2++) {
+                for (let a = 0; a < c; a++) {
                     regret1[a] += (outcome[a][a2] - outcome[a1][a2]) * (s1[a1] * s2[a2]);
                     regret2[a] -= (outcome[a1][a] - outcome[a1][a2]) * (s1[a1] * s2[a2]);
                 }
@@ -149,36 +142,36 @@ function nash(bit1,bit2,cur,iters, data) {
 
     let cards1 = [];
     let cards2 = [];
-    for (var i = 0; i < 8; i++) {
-        if ((bit1 & (1 << i)) > 0) cards1.push(i);
-        if ((bit2 & (1 << i)) > 0) cards2.push(i);
+    for (let i = 0; i < 8; i++) {
+        if (cur.inHand("yarg",i)) cards1.push(i);
+        if (cur.inHand("applewood",i)) cards2.push(i);
     }
     let ans1 = Array.from({length: 8});
     let ans2 = Array.from({length: 8});
-    for (var i = 0; i < c; i++) {
+    for (let i = 0; i < c; i++) {
         ans1[cards1[i]] = sum1[i]/iters;
         ans2[cards2[i]] = sum2[i]/iters;
     }
     return {ans1,ans2};
 }
 
-function minmax(bit1, bit2, cur, data) {
+export function minmax(cur, data) {
     let cards1 = [];
     let cards2 = [];
-    for (var i = 0; i < 8; i++) {
-        if ((bit1 & (1 << i)) > 0) cards1.push(i);
-        if ((bit2 & (1 << i)) > 0) cards2.push(i);
+    for (let i = 0; i < 8; i++) {
+        if (cur.inHand("yarg",i)) cards1.push(i);
+        if (cur.inHand("applewood",i)) cards2.push(i);
     }
-    let outcome = calculateOutcome(bit1,bit2,cur, data);
+    let outcome = calculateOutcome(cur, data);
     let c = outcome.length;
     let ansPair;
     let INF = 100.0;
     if (cur.spy === 1) {
         let ans = INF;
-        for (var j = 0; j < c; j++) {
+        for (let j = 0; j < c; j++) {
             let val = -INF;
             let valPair;
-            for (var i = 0; i < c; i++) {
+            for (let i = 0; i < c; i++) {
                 if (outcome[i][j] > val) {
                     val = outcome[i][j];
                     valPair = [i,j];
@@ -191,10 +184,10 @@ function minmax(bit1, bit2, cur, data) {
         }
     } else {
         let ans = -INF;
-        for (var i = 0; i < c; i++) {
+        for (let i = 0; i < c; i++) {
             let val = INF;
             let valPair;
-            for (var j = 0; j < c; j++) {
+            for (let j = 0; j < c; j++) {
                 if (outcome[i][j] < val) {
                     val = outcome[i][j];
                     valPair = [i,j];
@@ -208,23 +201,23 @@ function minmax(bit1, bit2, cur, data) {
     }
     let ans1 = Array.from({length: 8});
     let ans2 = Array.from({length: 8});
-    for (var x of cards1) ans1[x] = 0.0;
-    for (var x of cards2) ans2[x] = 0.0;
+    for (let x of cards1) ans1[x] = 0.0;
+    for (let x of cards2) ans2[x] = 0.0;
     ans1[cards1[ansPair[0]]] = 1.0;
     ans2[cards2[ansPair[1]]] = 1.0;
     return {ans1,ans2};
 }
 
-export function solve(bit1, bit2, cur, data) {
-    let hash = getHash(bit1,bit2,cur.score1,cur.score2,cur.hold,cur.spy,cur.general);
+export function solve(cur, data, iters=2000) {
+    let hash = cur.getHash();
     let result;
     if (hash in data) {
         let ev = String(Math.round(50+50*data[hash])) + "-" + String(Math.round(50-50*data[hash]));
         if (cur.spy === 1 || cur.spy === 2) {
             //someone has spy
-            result = minmax(bit1,bit2,cur,data);
+            result = minmax(cur,data);
         } else {
-            result = nash(bit1,bit2,cur,2000,data);
+            result = nash(cur,iters,data);
         }
         result.ev = ev;
         return result;

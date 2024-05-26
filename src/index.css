@@ -7,21 +7,18 @@
   color: #333;
 }
 .navbar {
-  padding: 20px;
   display: flex;
   align-items: center;
   max-width: 800px;
   margin: 0 auto;
   border-bottom: 1px solid #f2f2f2;
 }
-.navbar h1 {
-  color: black;
-}
 
 .navbar .links {
   margin-left: auto;
 }
 .navbar a {
+  color: black;
   margin-left: 16px;
   text-decoration: none;
   padding: 6px;
@@ -29,7 +26,6 @@
 .navbar a:hover {
   color: #f1356d;
 }
-
 
 .applewood,.yarg {
   display: flex;
@@ -57,11 +53,11 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 10px;
+  padding: 3px;
   box-sizing: border-box;
 }
 
-.card-preview>h4 {
+.card-preview>h5 {
   margin-top: 3px;
 }
 
@@ -71,12 +67,16 @@
   margin-bottom: 10px;
 }
 
-.applewood h3 {
+.applewood h4 {
   color: red;
 }
 
-.yarg h3 {
+.yarg h4 {
   color: blue;
+}
+
+div.card-preview.clicked {
+  background-color: rgba(251, 247, 25, 0.5);;
 }
 
 input[type=checkbox] {
@@ -84,8 +84,12 @@ input[type=checkbox] {
   transform: scale(2);
 }
 
-.solveButton {
-  font-size: 150%;
+.gameRow {
+  margin: 20px;
+}
+
+.centeredRow {
+  display: flex;
+  justify-content: center;
   margin: 5px;
-  border-radius: 12px;
 }
