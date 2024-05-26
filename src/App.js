@@ -2,7 +2,7 @@ import './App.css';
 import Navbar from './NavBar';
 import Solver from './Solver';
 
-import { Route, Switch, Link } from "react-router-dom";
+import { Routes , Route } from 'react-router-dom';
 
 function App() {
   return (
@@ -10,14 +10,10 @@ function App() {
       <Navbar />
       <div className="content">
         
-        <Switch>
-            <Route exact path="/">
-              <Solver />
-            </Route>
-            <Route path="/game">
-              <Game />
-            </Route>
-          </Switch>
+        <Routes>
+            <Route path='/' element={<Solver/>} />
+            <Route path='/game' element={<Game/>} />
+          </Routes>
       </div>
     </div>
   );
