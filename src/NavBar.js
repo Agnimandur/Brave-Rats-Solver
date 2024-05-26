@@ -3,7 +3,7 @@ const Navbar = () => {
       <nav className="navbar">
         <h1><a href="/">Brave Rats App</a></h1>
         <div className="links">
-          <a href="/">Home</a>
+          <a href="https://recursivedragon.com">RDC</a>
           <a href="/game" style={{ 
             color: 'white', 
             backgroundColor: '#f1356d',
