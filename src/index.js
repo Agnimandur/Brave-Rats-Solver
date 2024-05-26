@@ -26,14 +26,13 @@ import reportWebVitals from './reportWebVitals';
 //   <RouterProvider router={router} />
 // );
 
-import { HashRouter } from 'react-router-dom';
-ReactDOM.render(
-  <React.StrictMode>
-    <HashRouter>
-      <App />
-    </HashRouter>
-  </React.StrictMode>,
-  document.getElementById('root')
+import { BrowserRouter } from 'react-router-dom';
+const root = createRoot(document.getElementById("root"));
+
+root.render(
+  <BrowserRouter>
+    {<App />}
+  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function
