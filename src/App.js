@@ -12,8 +12,8 @@ function App() {
       <div className="content">
         
         <Routes>
-            <Route path='/' element={<Solver/>} />
-            <Route path='/game' element={<Game/>} />
+            <Route path='/Brave-Rats-Solver' element={<Solver/>} />
+            <Route path='/Brave-Rats-Solver/game' element={<Game/>} />
           </Routes>
       </div>
     </div>

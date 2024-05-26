@@ -41,23 +41,23 @@ const Solver = () => {
       <Hand name="applewood" game={game} setGame={setGame} strategyArray={strategy.ans2} />
 
       <Stack className="centeredRow" direction="horizontal" gap={2}>
-        <label for="yargScore" style={{color: 'blue'}}>Yarg Score: </label>
+        <label htmlFor="yargScore" style={{color: 'blue'}}>Yarg Score: </label>
         <input id="yargScore" type="number" min="0" max="3" defaultValue="0" onChange={(e) => setGame(new State({...game, score1: Number(e.target.value)}))}></input>
         
-        <label for="holdScore">Points on Hold: </label>
+        <label htmlFor="holdScore">Points on Hold: </label>
         <input id="holdScore" type="number" min="0" max="7" defaultValue="0" onChange={(e) => setGame(new State({...game, hold: Number(e.target.value)}))}></input>
         
-        <label for="applewoodScore" style={{color: 'red'}}>Applewood Score: </label>
+        <label htmlFor="applewoodScore" style={{color: 'red'}}>Applewood Score: </label>
         <input id="applewoodScore" type="number" min="0" max="3" defaultValue="0" onChange={(e) => setGame(new State({...game, score2: Number(e.target.value)}))}></input>
 
-        <label for="spy">Spy? </label>
+        <label htmlFor="spy">Spy? </label>
         <select id="spy" onChange={(e) => setGame(new State({...game, spy: Number(e.target.value)}))}>
             <option value="0">No Spy</option>
             <option value="1">Yarg has spy</option>
             <option value="2">Applewood has spy</option>
         </select>
 
-        <label for="general">General (+2)? </label>
+        <label htmlFor="general">General (+2)? </label>
         <select id="general" onChange={(e) => setGame(new State({...game, general: Number(e.target.value)}))}>
             <option value="0">No General</option>
             <option value="1">Yarg has +2 this round</option>
