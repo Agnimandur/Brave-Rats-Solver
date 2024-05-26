@@ -6,11 +6,11 @@ import Game from './Game'
 import reportWebVitals from './reportWebVitals';
 
 import {
-  createBrowserRouter,
+  createHashRouter,
   RouterProvider,
 } from "react-router-dom";
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     element: <App />
