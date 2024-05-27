@@ -69,10 +69,12 @@
 
 .applewood h4 {
   color: red;
+  font-size: larger;
 }
 
 .yarg h4 {
   color: blue;
+  font-size: larger;
 }
 
 div.card-preview.clicked {

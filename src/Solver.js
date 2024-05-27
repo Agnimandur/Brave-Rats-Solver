@@ -4,6 +4,9 @@ import axios from "axios";
 import Stack from 'react-bootstrap/Stack';
 import Button from 'react-bootstrap/Button';
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 import {State} from './state.js';
 import {solve} from './nash.js';
@@ -40,31 +43,49 @@ const Solver = () => {
       <Hand name="yarg" game={game} setGame={setGame} strategyArray={strategy.ans1} />
       <Hand name="applewood" game={game} setGame={setGame} strategyArray={strategy.ans2} />
 
-      <Stack className="centeredRow" direction="horizontal" gap={2}>
-        <label htmlFor="yargScore" style={{color: 'blue'}}>Yarg Score: </label>
-        <input id="yargScore" type="number" min="0" max="3" defaultValue="0" onChange={(e) => setGame(new State({...game, score1: Number(e.target.value)}))}></input>
+      <Container style={{'margin-bottom': '20px'}}>
+        <Row>
+          <Col>
+            <Stack direction="vertical" style={{'alignItems': 'center'}}>
+              <label htmlFor="yargScore" style={{color: 'blue'}}>Yarg Score: </label>
+              <input id="yargScore" type="number" min="0" max="3" defaultValue="0" maxLength="1" size="1" onChange={(e) => setGame(new State({...game, score1: Number(e.target.value)}))}></input>
+            </Stack>
+          </Col>
+          <Col>
+            <Stack direction="vertical" style={{'alignItems': 'center'}}>
+              <label htmlFor="holdScore">Points on Hold: </label>
+              <input id="holdScore" type="number" min="0" max="7" defaultValue="0" maxLength="1" size="1" onChange={(e) => setGame(new State({...game, hold: Number(e.target.value)}))}></input>    
+            </Stack>
+          </Col>
+          <Col>
+            <Stack direction="vertical" style={{'alignItems': 'center'}}>
+              <label htmlFor="applewoodScore" style={{color: 'red'}}>Applewood Score: </label>
+              <input id="applewoodScore" type="number" min="0" max="3" defaultValue="0" onChange={(e) => setGame(new State({...game, score2: Number(e.target.value)}))}></input>
+            </Stack>
+          </Col>
+          <Col>
+            <Stack direction="vertical" style={{'alignItems': 'center'}}>
+              <label htmlFor="spy">Has Spy? </label>
+              <select id="spy" onChange={(e) => setGame(new State({...game, spy: Number(e.target.value)}))}>
+                  <option value="0">No Spy</option>
+                  <option value="1">Yarg</option>
+                  <option value="2">Applewood</option>
+              </select>
+            </Stack>
+          </Col>
+          <Col>
+            <Stack direction="vertical" style={{'alignItems': 'center'}}>
+              <label htmlFor="general">Has General (+2)? </label>
+              <select id="general" onChange={(e) => setGame(new State({...game, general: Number(e.target.value)}))}>
+                  <option value="0">No General</option>
+                  <option value="1">Yarg</option>
+                  <option value="2">Applewood</option>
+              </select>
+            </Stack>
+          </Col>
+        </Row>
+      </Container>
         
-        <label htmlFor="holdScore">Points on Hold: </label>
-        <input id="holdScore" type="number" min="0" max="7" defaultValue="0" onChange={(e) => setGame(new State({...game, hold: Number(e.target.value)}))}></input>
-        
-        <label htmlFor="applewoodScore" style={{color: 'red'}}>Applewood Score: </label>
-        <input id="applewoodScore" type="number" min="0" max="3" defaultValue="0" onChange={(e) => setGame(new State({...game, score2: Number(e.target.value)}))}></input>
-
-        <label htmlFor="spy">Spy? </label>
-        <select id="spy" onChange={(e) => setGame(new State({...game, spy: Number(e.target.value)}))}>
-            <option value="0">No Spy</option>
-            <option value="1">Yarg has spy</option>
-            <option value="2">Applewood has spy</option>
-        </select>
-
-        <label htmlFor="general">General (+2)? </label>
-        <select id="general" onChange={(e) => setGame(new State({...game, general: Number(e.target.value)}))}>
-            <option value="0">No General</option>
-            <option value="1">Yarg has +2 this round</option>
-            <option value="2">Applewood has +2 this round</option>
-        </select>
-      </Stack>
-      
       <Stack className="centeredRow" direction="horizontal" gap={2}>
           <Button variant="danger" size="lg" onClick={calculateStrategy}>SOLVE!</Button>
           <h5>Yarg-Applewood Win %: {strategy.ev}</h5>
